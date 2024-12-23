@@ -33,13 +33,22 @@ static GLOBAL: snmalloc_rs::SnMalloc = snmalloc_rs::SnMalloc;
 // the call to `default_python_config()` below.
 include!(env!("DEFAULT_PYTHON_CONFIG_RS"));
 
+use crate::pymod::PyInit_string_sum;
+use std::ffi::CString;
+
+pub mod pymod;
+
 fn main() {
     // The following code is in a block so the MainPythonInterpreter is destroyed in an
     // orderly manner, before process exit.
     let exit_code = {
         // Load the default Python configuration as derived by the PyOxidizer config
         // file used at build time.
-        let config: OxidizedPythonInterpreterConfig = default_python_config();
+        let mut config: OxidizedPythonInterpreterConfig = default_python_config();
+        config.extra_extension_modules = Some(vec![pyembed::ExtensionModule {
+            name: CString::new("string_sum").unwrap(),
+            init_func: PyInit_string_sum,
+        }]);
 
         // Construct a new Python interpreter using that config, handling any errors
         // from construction.
@@ -53,11 +62,17 @@ fn main() {
                 // the interpreter is guaranteed to be finalized.
                 println!("About to run with scapy loaded");
                 // let dict: pyo3::types::PyDict = Default::default();
-                interp.with_gil(|py| match py.run("import scapy; from scapy.all import *; a=IP(); a.show()", None, None) {
-                    Ok(_) => {
-                       println!("python code executed successfully");
+                interp.with_gil(|py| {
+                    match py.run(
+                        "import scapy; from scapy.all import *; a=IP(); a.show()",
+                        None,
+                        None,
+                    ) {
+                        Ok(_) => {
+                            println!("python code executed successfully");
+                        }
+                        Err(e) => println!("python error: {:?}", e),
                     }
-                    Err(e) => println!("python error: {:?}", e),
                 });
                 interp.run()
             }
