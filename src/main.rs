@@ -73,6 +73,12 @@ fn main() {
                         }
                         Err(e) => println!("python error: {:?}", e),
                     }
+                    let x: Vec<u8> = py
+                        .eval("bytes(Ether()/IP()/UDP())", None, None)
+                        .unwrap()
+                        .extract()
+                        .unwrap();
+                    println!("X: {:02x?}", x)
                 });
                 interp.run()
             }
