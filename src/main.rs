@@ -51,6 +51,14 @@ fn main() {
                 // This will either call `interp.py_runmain()` or
                 // `interp.run_multiprocessing()`. If `interp.py_runmain()` is called,
                 // the interpreter is guaranteed to be finalized.
+                println!("About to run with scapy loaded");
+                // let dict: pyo3::types::PyDict = Default::default();
+                interp.with_gil(|py| match py.run("import scapy; from scapy.all import *; a=IP(); a.show()", None, None) {
+                    Ok(_) => {
+                       println!("python code executed successfully");
+                    }
+                    Err(e) => println!("python error: {:?}", e),
+                });
                 interp.run()
             }
             Err(msg) => {

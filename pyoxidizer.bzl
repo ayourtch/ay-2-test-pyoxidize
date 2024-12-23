@@ -99,7 +99,7 @@ def make_exe():
     # an optional fallback.
 
     # Use in-memory location for adding resources by default.
-    # policy.resources_location = "in-memory"
+    policy.resources_location = "filesystem-relative:lib"
 
     # Use filesystem-relative location for adding resources by default.
     # policy.resources_location = "filesystem-relative:prefix"
@@ -141,7 +141,7 @@ def make_exe():
 
     # Set initial value for `sys.path`. If the string `$ORIGIN` exists in
     # a value, it will be expanded to the directory of the built executable.
-    # python_config.module_search_paths = ["$ORIGIN/lib"]
+    python_config.module_search_paths = ["$ORIGIN/lib"]
 
     # Use jemalloc as Python's memory allocator.
     # python_config.allocator_backend = "jemalloc"
