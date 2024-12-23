@@ -212,6 +212,12 @@ def make_exe():
         config=python_config,
     )
 
+    for resource in exe.pip_install(["scapy==2.4.5"]):
+        # resource.add_location = "filesystem-relative:lib"
+        exe.add_python_resource(resource)
+    
+
+
     # Install tcl/tk support files to a specified directory so the `tkinter` Python
     # module works.
     # exe.tcl_files_path = "lib"
