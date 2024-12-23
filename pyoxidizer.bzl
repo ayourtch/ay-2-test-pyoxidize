@@ -3,6 +3,18 @@
 # https://gregoryszorc.com/docs/pyoxidizer/stable/pyoxidizer.html for details
 # of this configuration file format.
 
+def resource_callback(policy, resource):
+    if type(resource) == "File":
+      print("AYXXZZZ", resource)
+      resource.add_location = "in-memory"
+    else:
+      print("AYXX", resource.name, type(resource))
+      if resource.name.startswith("scapy"):
+          resource.add_location = "filesystem-relative:lib"
+      #  resource.add_location = "in-memory"
+
+
+
 # Configuration files consist of functions which define build "targets."
 # This function creates a Python executable and installs it in a destination
 # directory.
@@ -94,7 +106,7 @@ def make_exe():
 
     # Attempt to add resources relative to the built binary when
     # `resources_location` fails.
-    # policy.resources_location_fallback = "filesystem-relative:prefix"
+    policy.resources_location_fallback = "filesystem-relative:lib"
 
     # Clear out a fallback resource location.
     # policy.resources_location_fallback = None
@@ -110,6 +122,9 @@ def make_exe():
     # Configure policy values to handle files as files and not attempt
     # to classify files as specific types.
     # policy.set_resource_handling_mode("files")
+
+    policy.register_resource_callback(resource_callback)
+
 
     # This variable defines the configuration of the embedded Python
     # interpreter. By default, the interpreter will run a Python REPL
